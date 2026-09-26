@@ -54,9 +54,9 @@ def list_bills(directory: Path) -> BillCorpus:
 
 
 @st.cache_resource(show_spinner="Indexing bills…")
-def build_retriever(api_key: str, _file_names: tuple[str, ...]):
+def build_retriever(api_key: str, file_names: tuple[str, ...]):
     settings = VocareumSettings(api_key=SecretStr(api_key))
-    documents, skipped = load_bills(BILLS_DIR, _file_names)
+    documents, skipped = load_bills(BILLS_DIR, file_names)
     chunks = RecursiveCharacterTextSplitter(
         chunk_size=1000,
         chunk_overlap=200,
@@ -72,7 +72,7 @@ def build_retriever(api_key: str, _file_names: tuple[str, ...]):
         persist_directory=str(INDEX_DIR),
     )
     indexed = IndexedBills(
-        file_names=[name for name in _file_names if name not in skipped],
+        file_names=[name for name in file_names if name not in skipped],
         skipped=skipped,
         chunk_count=len(chunks),
     )
